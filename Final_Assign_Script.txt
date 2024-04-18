@@ -1,0 +1,56 @@
+# User Management
+users=("Michael" "Dwight" "Jim" "Phyllis" "Andy" "Stanley" "Pam" "Kevin" "Oscar" "Angela" "Meredith" "Creed" "Kelly" "Toby")
+for user in "${users[@]}"; do
+    sudo useradd "$user"
+done
+
+# Group Creation
+groups=("manager" "accounting" "sales" "support" "hr")
+for group in "${groups[@]}"; do
+    sudo groupadd "$group"
+done
+
+# Group Assignments
+sudo usermod -aG manager Michael
+sudo usermod -aG sales Dwight
+sudo usermod -aG sales Jim
+sudo usermod -aG sales Phyllis
+sudo usermod -aG sales Andy
+sudo usermod -aG sales Stanley
+sudo usermod -aG accounting Kevin
+sudo usermod -aG accounting Oscar
+sudo usermod -aG accounting Angela
+sudo usermod -aG support Pam
+sudo usermod -aG support Meredith
+sudo usermod -aG support Creed
+sudo usermod -aG hr Kelly
+sudo usermod -aG hr Toby
+
+# Directory Structure Setup
+sudo mkdir /var/group_directories
+for group in "${groups[@]}"; do
+    sudo mkdir "/var/group_directories/$group"
+    sudo chgrp "$group" "/var/group_directories/$group"
+    sudo chmod 770 "/var/group_directories/$group"
+done
+sudo chgrp manager /var/group_directories/*
+sudo chmod 770 /var/group_directories/*
+
+# Grant access to Michael and Toby
+sudo chown -R Michael:Toby /var/group_directories
+sudo chmod -R 770 /var/group_directories
+
+# Web Server Installation
+sudo apt-get update
+sudo apt-get install apache2 -y
+sudo systemctl start apache2
+sudo systemctl enable apache2
+echo "<html><body><h1>Welcome to our company's website!</h1>
+<p>This website is under construction. Please check back later for updates.</p>
+<p>If you have any questions, please contact the IT department.</p>
+</body></html>" | sudo tee /var/www/html/index.html
+
+# FTP Server Installation
+sudo apt-get install vsftpd -y
+sudo systemctl start vsftpd
+sudo systemctl enable vsftpd
